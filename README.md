@@ -94,13 +94,13 @@ Open a terminal (Terminal on macOS/Linux, PowerShell on Windows) and run the fol
 ## Development
 
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 For production builds:
 ```bash
-npm run build
+bun run build
 ```
 
 ## License

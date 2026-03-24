@@ -855,33 +855,12 @@ export function useChatController(
 	}, [acpAdapter, chat.updateMessage]);
 
 	// ============================================================
-	// Effects - Update Check
+	// Effects - Update Check (disabled)
 	// ============================================================
-	useEffect(() => {
-		plugin
-			.checkForUpdates()
-			.then(setIsUpdateAvailable)
-			.catch((error) => {
-				logger.error("Failed to check for updates:", error);
-			});
-	}, [plugin, logger]);
 
 	// ============================================================
-	// Effects - Agent Update Check
+	// Effects - Agent Update Check (disabled)
 	// ============================================================
-	useEffect(() => {
-		if (!isSessionReady || !session.agentInfo?.name) {
-			return;
-		}
-
-		checkAgentUpdate(
-			session.agentInfo as { name: string; version?: string },
-		)
-			.then(setAgentUpdateNotification)
-			.catch((error) => {
-				logger.error("Failed to check agent update:", error);
-			});
-	}, [isSessionReady, session.agentInfo, logger]);
 
 	// ============================================================
 	// Effects - Save Session Messages on Turn End
