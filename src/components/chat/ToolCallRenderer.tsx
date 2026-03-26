@@ -21,7 +21,7 @@ interface ToolCallRendererProps {
 	) => Promise<void>;
 }
 
-export function ToolCallRenderer({
+export const ToolCallRenderer = React.memo(function ToolCallRenderer({
 	content,
 	plugin,
 	acpClient,
@@ -206,7 +206,7 @@ export function ToolCallRenderer({
 			)}
 		</div>
 	);
-}
+});
 
 /*
 // Details component that switches based on kind
