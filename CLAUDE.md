@@ -4,6 +4,7 @@
 Obsidian plugin for AI agent interaction (Claude Code, Gemini CLI, custom agents). **React Hooks Architecture**.
 
 **Tech**: React 19, TypeScript, Obsidian API, Agent Client Protocol (ACP)
+**Package manager**: Bun (use `bun install`, `bun run build`, `bun run dev` — NOT npm)
 
 ## Architecture
 

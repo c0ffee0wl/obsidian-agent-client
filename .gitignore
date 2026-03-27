@@ -31,7 +31,7 @@ sessions/
 .DS_Store
 
 # AI coding agent settings (tracked for shared configuration)
-# .claude/
+.claude/
 
 # MCP client configuration
 .mcp.json
@@ -48,3 +48,5 @@ dev/
 
 # Local implementation plans and working documents
 plan/
+
+PLAN*

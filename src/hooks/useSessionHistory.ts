@@ -17,6 +17,7 @@ import {
 	getSessionCapabilityFlags,
 	type SessionCapabilityFlags,
 } from "../shared/session-capability-utils";
+import { appendToClaudeHistory } from "../shared/claude-history-sync";
 
 // ============================================================================
 // Types
@@ -692,6 +693,15 @@ export function useSessionHistory(
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			});
+
+			// Sync to Claude Code's native history.jsonl so external viewers
+			// (e.g., claude-run) can discover this session.
+			appendToClaudeHistory(
+				sessionId,
+				messageContent,
+				cwd,
+				settingsAccess.getSnapshot().windowsWslMode,
+			);
 		},
 		[session.agentId, cwd, settingsAccess],
 	);
