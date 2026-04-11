@@ -2,6 +2,12 @@ import { execSync } from "child_process";
 import { Platform } from "obsidian";
 
 /**
+ * Valid characters for a WSL distribution name when passed to `wsl.exe -d`.
+ * Exported so other modules can reuse the same validation.
+ */
+export const WSL_DISTRO_NAME_RE = /^[a-zA-Z0-9_-]+$/;
+
+/**
  * Shell escaping utilities for different platforms.
  */
 
@@ -270,8 +276,7 @@ export function wrapCommandForWsl(
 
 	// Specify WSL distribution if provided
 	if (distribution) {
-		// Validate distribution name (alphanumeric, dash, underscore only)
-		if (!/^[a-zA-Z0-9_-]+$/.test(distribution)) {
+		if (!WSL_DISTRO_NAME_RE.test(distribution)) {
 			throw new Error(`Invalid WSL distribution name: ${distribution}`);
 		}
 		wslArgs.push("-d", distribution);

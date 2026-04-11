@@ -121,13 +121,3 @@ export interface ProcessError extends ErrorInfo {
 	originalError?: unknown;
 }
 
-// ============================================================================
-// UI Display Types
-// ============================================================================
-
-/**
- * Visual variant for error/notification banners.
- * - "error": Red/critical styling
- * - "info": Subtle/informational styling
- */
-export type OverlayVariant = "error" | "info";

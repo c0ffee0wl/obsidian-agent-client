@@ -12,6 +12,7 @@ import type {
 	AgentCapabilities,
 } from "../types/session";
 import type { ChatMessage } from "../types/chat";
+import { appendToClaudeHistory } from "../services/claude-history-sync";
 
 // ============================================================================
 // Session Capability Helpers (from session-capability-utils.ts)
@@ -657,6 +658,24 @@ export function useSessionHistory(
 							localMessages,
 						);
 					}
+
+					// Mirror the new Claude session into ~/.claude/history.jsonl
+					// so Claude Code's /resume and external viewers see it.
+					// No-op for non-Claude agents; custom configs that launch
+					// claude-agent-acp under their own id are not detected.
+					const snapshot = settingsAccess.getSnapshot();
+					if (session.agentId === snapshot.claude.id) {
+						appendToClaudeHistory(
+							result.sessionId,
+							newTitle,
+							cwd,
+							{
+								enabled: snapshot.windowsWslMode,
+								distribution:
+									snapshot.windowsWslDistribution,
+							},
+						);
+					}
 				}
 
 				// Invalidate cache since a new session was created
@@ -788,6 +807,18 @@ export function useSessionHistory(
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			});
+
+			// Mirror into ~/.claude/history.jsonl for Claude Code's /resume.
+			// Pass the already-truncated `title` (<=53 chars), not the raw
+			// `messageContent`: a multi-KB paste would push the JSONL line
+			// past POSIX PIPE_BUF (4 KiB) and lose O_APPEND atomicity.
+			const snapshot = settingsAccess.getSnapshot();
+			if (session.agentId === snapshot.claude.id) {
+				appendToClaudeHistory(sessionId, title, agentCwd, {
+					enabled: snapshot.windowsWslMode,
+					distribution: snapshot.windowsWslDistribution,
+				});
+			}
 		},
 		[session.agentId, agentCwd, settingsAccess],
 	);

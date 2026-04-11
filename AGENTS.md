@@ -5,6 +5,8 @@ Obsidian plugin for AI agent interaction (Claude Code, Codex, Gemini CLI, custom
 
 **Tech**: React 19, TypeScript, Obsidian API, Agent Client Protocol (ACP)
 
+**Package manager**: Bun. Use `bun install`, `bun run dev`, `bun run build` — not npm.
+
 ## Architecture
 
 ```
@@ -30,8 +32,7 @@ src/
 │   ├── message-state.ts         # Message array transforms (upsert, merge, streaming apply)
 │   ├── message-sender.ts        # Prompt preparation + sending (pure functions)
 │   ├── chat-exporter.ts         # Markdown export with frontmatter
-│   ├── view-registry.ts         # Multi-view management, focus, broadcast
-│   └── update-checker.ts        # Agent/plugin version checking
+│   └── view-registry.ts         # Multi-view management, focus, broadcast
 ├── hooks/                       # React custom hooks (state + logic)
 │   ├── useAgent.ts              # Facade: composes useAgentSession + useAgentMessages
 │   ├── useAgentSession.ts       # Session lifecycle, config options, optimistic updates
@@ -142,7 +143,7 @@ FloatingChatView uses `onRegisterExpanded` callback (not CustomEvent) for expand
 **useChatActions**: Business callbacks
 - handleSendMessage, handleNewChat, handleExportChat, handleRestartAgent, etc.
 - Uses individual method deps (not whole agent object) for stability
-- Owns restoredMessage and agentUpdateNotification state
+- Owns restoredMessage state
 
 **useSessionHistory**: Session persistence
 - `restoreSession()`: Load/resume with local message fallback

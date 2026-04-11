@@ -2,7 +2,7 @@
  * Hook for ChatPanel business callbacks.
  *
  * Encapsulates message sending, new chat, export, agent switching/restart,
- * config changes, and related UI state (restoredMessage, agentUpdateNotification).
+ * config changes, and related UI state (restoredMessage).
  */
 
 import { useState, useCallback } from "react";
@@ -20,7 +20,6 @@ import type {
 	ResourceLinkPromptContent,
 } from "../types/chat";
 import type { AgentClientPluginSettings } from "../plugin";
-import type { AgentUpdateNotification } from "../services/update-checker";
 import { ChatExporter } from "../services/chat-exporter";
 import { getLogger } from "../utils/logger";
 import { buildFileUri } from "../utils/paths";
@@ -49,13 +48,10 @@ export interface UseChatActionsReturn {
 
 	// UI state actions
 	handleClearError: () => void;
-	handleClearAgentUpdate: () => void;
 	handleRestoredMessageConsumed: () => void;
 
 	// State (moved from ChatPanel)
 	restoredMessage: string | null;
-	agentUpdateNotification: AgentUpdateNotification | null;
-	setAgentUpdateNotification: (n: AgentUpdateNotification | null) => void;
 
 	// Auto-export (needed by ChatPanel cleanup)
 	autoExportIfEnabled: (
@@ -86,8 +82,6 @@ export function useChatActions(
 	// ============================================================
 
 	const [restoredMessage, setRestoredMessage] = useState<string | null>(null);
-	const [agentUpdateNotification, setAgentUpdateNotification] =
-		useState<AgentUpdateNotification | null>(null);
 
 	// ============================================================
 	// Auto-export
@@ -140,7 +134,6 @@ export function useChatActions(
 		async (content: string, attachments?: AttachedFile[]) => {
 			// Dismiss overlays on send
 			agent.clearError();
-			setAgentUpdateNotification(null);
 
 			const isFirstMessage = messages.length === 0;
 
@@ -365,10 +358,6 @@ export function useChatActions(
 		agent.clearError();
 	}, [agent.clearError]);
 
-	const handleClearAgentUpdate = useCallback(() => {
-		setAgentUpdateNotification(null);
-	}, []);
-
 	const handleRestoredMessageConsumed = useCallback(() => {
 		setRestoredMessage(null);
 	}, []);
@@ -388,11 +377,8 @@ export function useChatActions(
 		handleSetModel,
 		handleSetConfigOption,
 		handleClearError,
-		handleClearAgentUpdate,
 		handleRestoredMessageConsumed,
 		restoredMessage,
-		agentUpdateNotification,
-		setAgentUpdateNotification,
 		autoExportIfEnabled,
 	};
 }

@@ -93,14 +93,16 @@ Open a terminal (Terminal on macOS/Linux, PowerShell on Windows) and run the fol
 
 ## Development
 
+This fork uses [Bun](https://bun.sh/) as its package manager.
+
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 For production builds:
 ```bash
-npm run build
+bun run build
 ```
 
 ## License

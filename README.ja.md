@@ -89,14 +89,16 @@ https://github.com/user-attachments/assets/1c538349-b3fb-44dd-a163-7331cbca7824
 
 ## 開発
 
+このフォークは [Bun](https://bun.sh/) をパッケージマネージャとして使用します。
+
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 プロダクションビルド:
 ```bash
-npm run build
+bun run build
 ```
 
 ## ライセンス

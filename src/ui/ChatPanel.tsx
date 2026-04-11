@@ -37,7 +37,6 @@ import {
 	type SessionModelState,
 	type SessionConfigOption,
 } from "../types/session";
-import { checkAgentUpdate } from "../services/update-checker";
 
 /** Stable empty array for useSuggestions when no commands available */
 const EMPTY_COMMANDS: SlashCommand[] = [];
@@ -231,7 +230,6 @@ export function ChatPanel({
 	// ============================================================
 	// Local State
 	// ============================================================
-	const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
 
 	// Input state (for broadcast commands)
 	const [inputValue, setInputValue] = useState("");
@@ -297,11 +295,8 @@ export function ChatPanel({
 		handleSetModel,
 		handleSetConfigOption,
 		handleClearError,
-		handleClearAgentUpdate,
 		handleRestoredMessageConsumed,
 		restoredMessage,
-		agentUpdateNotification,
-		setAgentUpdateNotification,
 		autoExportIfEnabled,
 	} = actions;
 
@@ -652,35 +647,6 @@ export function ChatPanel({
 	}, [logger]);
 
 	// ============================================================
-	// Effects - Update Check
-	// ============================================================
-	useEffect(() => {
-		plugin
-			.checkForUpdates()
-			.then(setIsUpdateAvailable)
-			.catch((error) => {
-				logger.error("Failed to check for updates:", error);
-			});
-	}, [plugin, logger]);
-
-	// ============================================================
-	// Effects - Agent Update Check
-	// ============================================================
-	useEffect(() => {
-		if (!isSessionReady || !session.agentInfo?.name) {
-			return;
-		}
-
-		checkAgentUpdate(
-			session.agentInfo as { name: string; version?: string },
-		)
-			.then(setAgentUpdateNotification)
-			.catch((error) => {
-				logger.error("Failed to check agent update:", error);
-			});
-	}, [isSessionReady, session.agentInfo, logger]);
-
-	// ============================================================
 	// Effects - Save Session Messages on Turn End
 	// ============================================================
 	const prevIsSendingRef = useRef<boolean>(false);
@@ -990,7 +956,6 @@ export function ChatPanel({
 			<ChatHeader
 				variant="sidebar"
 				agentLabel={activeAgentLabel}
-				isUpdateAvailable={isUpdateAvailable}
 				hasHistoryCapability={sessionHistory.canShowSessionHistory}
 				onNewChat={() => void handleNewChatWithPersist()}
 				onExportChat={() => void handleExportChat()}
@@ -1003,7 +968,6 @@ export function ChatPanel({
 				agentLabel={activeAgentLabel}
 				availableAgents={availableAgents}
 				currentAgentId={session.agentId}
-				isUpdateAvailable={isUpdateAvailable}
 				onAgentChange={(agentId) => void handleSwitchAgent(agentId)}
 				onShowMenu={handleShowFloatingMenu}
 				onMinimize={onMinimize}
@@ -1073,9 +1037,6 @@ export function ChatPanel({
 			// Error overlay props
 			errorInfo={errorInfo}
 			onClearError={handleClearError}
-			// Agent update notification props
-			agentUpdateNotification={agentUpdateNotification}
-			onClearAgentUpdate={handleClearAgentUpdate}
 			messages={messages}
 		/>
 	);
