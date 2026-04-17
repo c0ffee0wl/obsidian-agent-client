@@ -9,7 +9,7 @@ Open a terminal (Terminal on macOS/Linux, PowerShell on Windows) and run the fol
 1. Install codex-acp:
 
 ```bash
-npm install -g @zed-industries/codex-acp
+bun install -g @zed-industries/codex-acp
 ```
 
 2. Find the installation path:
@@ -50,7 +50,7 @@ This requires installing **Codex CLI** separately. The CLI creates the login ses
 1. Install Codex CLI by running the following command in your terminal:
 
 ```bash
-npm install -g @openai/codex
+bun install -g @openai/codex
 ```
 
 2. Login via CLI by running:

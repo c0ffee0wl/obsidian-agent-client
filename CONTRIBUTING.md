@@ -40,8 +40,7 @@ This plugin focuses on **ACP client implementation** + **features that make ACP 
 
 ### Prerequisites
 
-- Node.js 18.x or later
-- npm
+- [Bun](https://bun.sh/) 1.3.x or later
 
 ### Setup Steps
 
@@ -55,28 +54,28 @@ git clone https://github.com/RAIT-09/obsidian-agent-client.git agent-client
 cd agent-client
 
 # Install dependencies
-npm install
+bun install
 
 # Start development build (watch mode)
-npm run dev
+bun run dev
 ```
 
 ### Testing in Obsidian
 
-1. After cloning to `.obsidian/plugins/agent-client`, run `npm run dev`
+1. After cloning to `.obsidian/plugins/agent-client`, run `bun run dev`
 2. Enable the plugin in Obsidian Settings → Community Plugins
 3. Code changes trigger automatic rebuilds, but you need to reload the plugin (toggle it off/on in Community Plugins) to see changes
 
 ## Available Commands
 
-| Command             | Description                                      |
-| ------------------- | ------------------------------------------------ |
-| `npm run dev`       | Development build (watch mode)                   |
-| `npm run build`     | Production build (includes TypeScript type check)|
-| `npm run lint`      | Run ESLint                                       |
-| `npm run lint:fix`  | Run ESLint with auto-fix                         |
-| `npm run format`    | Format code with Prettier                        |
-| `npm run format:check` | Check formatting (used in CI)                 |
+| Command                 | Description                                      |
+| ----------------------- | ------------------------------------------------ |
+| `bun run dev`           | Development build (watch mode)                   |
+| `bun run build`         | Production build (includes TypeScript type check)|
+| `bun run lint`          | Run ESLint                                       |
+| `bun run lint:fix`      | Run ESLint with auto-fix                         |
+| `bun run format`        | Format code with Prettier                        |
+| `bun run format:check`  | Check formatting (used in CI)                    |
 
 ## Code Style
 
@@ -166,8 +165,8 @@ We recommend [Conventional Commits](https://www.conventionalcommits.org/) style:
 
 Before submitting, please verify:
 
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
+- [ ] `bun run lint` passes
+- [ ] `bun run build` passes
 - [ ] Tested in Obsidian
 - [ ] Existing functionality still works
 - [ ] Documentation updated if needed
@@ -176,8 +175,8 @@ Before submitting, please verify:
 
 Pull requests automatically run:
 
-- ESLint (`npx eslint src/`)
-- Build (`npm run build`)
+- ESLint (`bun run lint`)
+- Build (`bun run build`)
 
 Please ensure these pass locally before submitting.
 

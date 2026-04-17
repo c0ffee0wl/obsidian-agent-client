@@ -79,7 +79,7 @@ export async function checkAgentUpdate(agentInfo: {
 			variant: "info",
 			title: "Package Migration Required",
 			message: `"${agentInfo.name}" has been renamed to "${replacement}".\nRun the following in your terminal:`,
-			suggestion: `npm uninstall -g ${agentInfo.name} && npm install -g ${replacement}`,
+			suggestion: `bun uninstall -g ${agentInfo.name} && bun install -g ${replacement}`,
 		};
 	}
 
@@ -100,7 +100,7 @@ export async function checkAgentUpdate(agentInfo: {
 				variant: "info",
 				title: "Agent Update Available",
 				message: `${npmPackage}: ${agentInfo.version} → ${latestVersion}.\nRun the following in your terminal:`,
-				suggestion: `npm install -g ${npmPackage}@latest`,
+				suggestion: `bun install -g ${npmPackage}@latest`,
 			};
 		}
 	} catch {

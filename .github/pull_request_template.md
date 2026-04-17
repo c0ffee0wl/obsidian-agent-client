@@ -16,8 +16,8 @@
 
 ## Checklist
 
-- [ ] `npm run lint` passes ("Use sentence case for UI text" errors are acceptable for brand names)
-- [ ] `npm run build` passes
+- [ ] `bun run lint` passes ("Use sentence case for UI text" errors are acceptable for brand names)
+- [ ] `bun run build` passes
 - [ ] Tested in Obsidian
 - [ ] Existing functionality still works
 - [ ] Documentation updated if needed

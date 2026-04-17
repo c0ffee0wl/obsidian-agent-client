@@ -1224,10 +1224,10 @@ export class AgentClientSettingTab extends PluginSettingTab {
 	}
 
 	/**
-	 * Renders a copyable npm install command hint below a Path setting.
+	 * Renders a copyable install command hint below a Path setting.
 	 */
 	private addInstallHint(containerEl: HTMLElement, npmPackage: string): void {
-		const command = `npm install -g ${npmPackage}@latest`;
+		const command = `bun install -g ${npmPackage}@latest`;
 		const frag = document.createDocumentFragment();
 		frag.append("Not installed? Run in terminal: ");
 		frag.appendChild(document.createElement("code")).textContent = command;

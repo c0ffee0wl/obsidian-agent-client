@@ -31,11 +31,11 @@
 - Keep styling in `styles.css` (avoid JS style manipulation).
 
 ## Developer workflows
-- Dev watch build: `npm run dev` (esbuild watch; outputs `main.js`).
-- Production build: `npm run build` (runs `tsc -noEmit -skipLibCheck` then esbuild production).
-- Formatting: `npm run format` / `npm run format:check` (Prettier).
-- Linting: `npm run lint` / `npm run lint:fix`.
-- Docs site: `npm run docs:dev`, `npm run docs:build`, `npm run docs:preview`.
+- Dev watch build: `bun run dev` (esbuild watch; outputs `main.js`).
+- Production build: `bun run build` (runs `tsc -noEmit -skipLibCheck` then esbuild production).
+- Formatting: `bun run format` / `bun run format:check` (Prettier).
+- Linting: `bun run lint` / `bun run lint:fix`.
+- Docs site: `bun run docs:dev`, `bun run docs:build`, `bun run docs:preview`.
 
 ## Naming conventions used throughout
 - Ports: `*.port.ts`

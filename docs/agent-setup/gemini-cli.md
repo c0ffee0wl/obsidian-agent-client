@@ -9,7 +9,7 @@ Open a terminal (Terminal on macOS/Linux, PowerShell on Windows) and run the fol
 1. Install Gemini CLI:
 
 ```bash
-npm install -g @google/gemini-cli
+bun install -g @google/gemini-cli
 ```
 
 2. Find the installation path:

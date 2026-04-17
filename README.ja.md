@@ -54,7 +54,7 @@ https://github.com/user-attachments/assets/1c538349-b3fb-44dd-a163-7331cbca7824
 1. **エージェントとACPアダプタをインストール**（例: Claude Code）:
    ```bash
    curl -fsSL https://claude.ai/install.sh | bash   # Claude Codeをインストール
-   npm install -g @agentclientprotocol/claude-agent-acp   # ACPアダプタをインストール
+   bun install -g @agentclientprotocol/claude-agent-acp   # ACPアダプタをインストール
    ```
 
 2. **ログイン**（APIキーを使う場合はスキップ）:
@@ -91,13 +91,13 @@ https://github.com/user-attachments/assets/1c538349-b3fb-44dd-a163-7331cbca7824
 ## 開発
 
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 プロダクションビルド:
 ```bash
-npm run build
+bun run build
 ```
 
 ## ライセンス
