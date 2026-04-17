@@ -47,6 +47,9 @@ export function escapeShellArgBash(arg: string): string {
 	return `'${arg.replace(/'/g, "'\\''")}'`;
 }
 
+/** Allowed WSL distribution name characters (alphanumeric, dash, underscore). */
+const WSL_DISTRO_NAME_RE = /^[a-zA-Z0-9_-]+$/;
+
 /**
  * Cache for the full Windows PATH to avoid repeated registry queries.
  */
@@ -270,8 +273,7 @@ export function wrapCommandForWsl(
 
 	// Specify WSL distribution if provided
 	if (distribution) {
-		// Validate distribution name (alphanumeric, dash, underscore only)
-		if (!/^[a-zA-Z0-9_-]+$/.test(distribution)) {
+		if (!WSL_DISTRO_NAME_RE.test(distribution)) {
 			throw new Error(`Invalid WSL distribution name: ${distribution}`);
 		}
 		wslArgs.push("-d", distribution);
@@ -305,6 +307,35 @@ export function wrapCommandForWsl(
  */
 function escapePathForShell(path: string): string {
 	return path.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+/**
+ * Build a wsl.exe invocation that runs a single short POSIX command.
+ *
+ * Unlike `wrapCommandForWsl`, this does NOT impose a cwd, login shell, or
+ * profile sourcing — use it for trivial one-shot writes (e.g. appending a
+ * line to a file) where the extra machinery would be wrong. The POSIX
+ * command runs as `sh -c <posixCommand>` inside the selected distribution.
+ *
+ * Validates the distribution name against the same regex as
+ * `wrapCommandForWsl`.
+ */
+export function buildWslShortCommand(
+	posixCommand: string,
+	distribution?: string,
+): { command: string; args: string[] } {
+	const args: string[] = [];
+	if (distribution) {
+		if (!WSL_DISTRO_NAME_RE.test(distribution)) {
+			throw new Error(`Invalid WSL distribution name: ${distribution}`);
+		}
+		args.push("-d", distribution);
+	}
+	args.push("sh", "-c", posixCommand);
+	return {
+		command: "C:\\Windows\\System32\\wsl.exe",
+		args,
+	};
 }
 
 /**

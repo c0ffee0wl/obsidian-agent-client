@@ -694,6 +694,20 @@ export class AgentClientSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					}),
 			);
+
+		new Setting(containerEl)
+			.setName("Sync Claude sessions to Claude Code")
+			.setDesc(
+				"Mirror new Claude Code sessions into ~/.claude/history.jsonl so they appear in `claude /resume` and external tools.",
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.claudeHistorySync)
+					.onChange(async (value) => {
+						this.plugin.settings.claudeHistorySync = value;
+						await this.plugin.saveSettings();
+					}),
+			);
 	}
 
 	/**

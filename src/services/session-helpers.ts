@@ -87,6 +87,27 @@ export function getCurrentAgent(
 // ============================================================================
 
 /**
+ * Detect whether a session's agent is Claude Code (or an equivalent
+ * configuration pointing at `@agentclientprotocol/claude-agent-acp`).
+ *
+ * Matches the built-in Claude config by id (zero-cost shortcut), then
+ * falls back to sniffing the agent's `command` + `args` for the package
+ * name. This catches custom agent configs that run the same binary under
+ * a user-chosen id.
+ */
+export function isClaudeCodeAgent(
+	settings: AgentClientPluginSettings,
+	agentSettings: BaseAgentSettings | null,
+	agentId: string | null,
+): boolean {
+	if (!agentId) return false;
+	if (agentId === settings.claude.id) return true;
+	if (!agentSettings) return false;
+	const hay = [agentSettings.command, ...agentSettings.args].join(" ");
+	return /claude-agent-acp\b/.test(hay);
+}
+
+/**
  * Find agent settings by ID from plugin settings.
  */
 export function findAgentSettings(

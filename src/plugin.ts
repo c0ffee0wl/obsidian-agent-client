@@ -91,6 +91,11 @@ export interface AgentClientPluginSettings {
 	// WSL settings (Windows only)
 	windowsWslMode: boolean;
 	windowsWslDistribution?: string;
+	/**
+	 * Mirror new Claude Code sessions into Claude Code CLI's history.jsonl
+	 * so they appear in `claude /resume` and external tooling.
+	 */
+	claudeHistorySync: boolean;
 	// Input behavior
 	sendMessageShortcut: SendMessageShortcut;
 	// View settings
@@ -163,6 +168,7 @@ const DEFAULT_SETTINGS: AgentClientPluginSettings = {
 	},
 	windowsWslMode: false,
 	windowsWslDistribution: undefined,
+	claudeHistorySync: true,
 	sendMessageShortcut: "enter",
 	chatViewLocation: "right-tab",
 	displaySettings: {
@@ -954,6 +960,10 @@ export default class AgentClientPlugin extends Plugin {
 			windowsWslDistribution: str(
 				raw.windowsWslDistribution,
 				D.windowsWslDistribution as string,
+			),
+			claudeHistorySync: bool(
+				raw.claudeHistorySync,
+				D.claudeHistorySync,
 			),
 			sendMessageShortcut: enumVal(
 				raw.sendMessageShortcut,

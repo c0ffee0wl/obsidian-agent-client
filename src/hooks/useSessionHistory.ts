@@ -12,6 +12,11 @@ import type {
 	AgentCapabilities,
 } from "../types/session";
 import type { ChatMessage } from "../types/chat";
+import { appendToClaudeHistory } from "../services/claude-history-sync";
+import {
+	findAgentSettings,
+	isClaudeCodeAgent,
+} from "../services/session-helpers";
 
 // ============================================================================
 // Session Capability Helpers (from session-capability-utils.ts)
@@ -298,6 +303,35 @@ export function useSessionHistory(
 	// Cache reference (not state to avoid re-renders)
 	const cacheRef = useRef<SessionCache | null>(null);
 	const currentCwdRef = useRef<string | undefined>(undefined);
+
+	/**
+	 * Fire-and-forget mirror of a newly created session into Claude Code
+	 * CLI's history.jsonl. Bails if the session isn't Claude-backed or the
+	 * user has disabled the toggle. Never throws into the caller.
+	 *
+	 * Not wired into `updateSessionTitle` on purpose — history.jsonl is
+	 * append-only, so re-appending on every title edit would duplicate.
+	 */
+	const mirrorToClaudeHistory = useCallback(
+		(sessionId: string, title: string, project: string) => {
+			const settings = settingsAccess.getSnapshot();
+			if (!settings.claudeHistorySync) return;
+			const agentSettings = session.agentId
+				? findAgentSettings(settings, session.agentId)
+				: null;
+			if (!isClaudeCodeAgent(settings, agentSettings, session.agentId)) {
+				return;
+			}
+			void appendToClaudeHistory({
+				sessionId,
+				display: title,
+				project,
+				wslMode: settings.windowsWslMode,
+				wslDistribution: settings.windowsWslDistribution,
+			});
+		},
+		[settingsAccess, session.agentId],
+	);
 
 	/**
 	 * Check if cache is valid.
@@ -649,6 +683,8 @@ export function useSessionHistory(
 						updatedAt: now,
 					});
 
+					mirrorToClaudeHistory(result.sessionId, newTitle, cwd);
+
 					// Save messages under new session ID for restore after restart
 					if (localMessages) {
 						void settingsAccess.saveSessionMessages(
@@ -676,6 +712,7 @@ export function useSessionHistory(
 			settingsAccess,
 			onMessagesRestore,
 			invalidateCache,
+			mirrorToClaudeHistory,
 			session.agentId,
 			sessions,
 		],
@@ -788,8 +825,10 @@ export function useSessionHistory(
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			});
+
+			mirrorToClaudeHistory(sessionId, title, agentCwd);
 		},
-		[session.agentId, agentCwd, settingsAccess],
+		[session.agentId, agentCwd, settingsAccess, mirrorToClaudeHistory],
 	);
 
 	/**
