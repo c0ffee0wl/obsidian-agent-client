@@ -421,20 +421,6 @@ If your plugin does not need CSS, delete this file.
 	white-space: nowrap;
 }
 
-.agent-client-chat-view-header-update {
-	flex: 0 1 auto;
-	padding: 2px 8px;
-	font-size: 11px;
-	color: var(--text-muted);
-	background-color: var(--background-modifier-hover);
-	border-radius: 4px;
-	font-weight: 500;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	min-width: 0;
-}
-
 /* ===== Inline Header (Floating/CodeBlock) ===== */
 .agent-client-inline-header {
 	display: flex;
@@ -552,13 +538,8 @@ If your plugin does not need CSS, delete this file.
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Variant border colors */
 .agent-client-error-overlay--error {
 	border-color: var(--color-red);
-}
-
-.agent-client-error-overlay--info {
-	border-color: var(--background-modifier-border);
 }
 
 .agent-client-error-overlay-header {
@@ -573,15 +554,6 @@ If your plugin does not need CSS, delete this file.
 	color: var(--color-red) !important;
 	font-size: 14px;
 	font-weight: 600;
-}
-
-/* Variant title colors */
-.agent-client-error-overlay--error .agent-client-error-overlay-title {
-	color: var(--color-red) !important;
-}
-
-.agent-client-error-overlay--info .agent-client-error-overlay-title {
-	color: var(--text-normal) !important;
 }
 
 .agent-client-error-overlay-close {
@@ -636,22 +608,6 @@ If your plugin does not need CSS, delete this file.
 	font-size: 12px;
 	font-style: italic;
 	line-height: 1.4;
-}
-
-.agent-client-error-overlay-code {
-	display: block;
-	margin-top: 4px;
-	padding: 6px 8px;
-	background-color: var(--background-primary);
-	border-radius: 4px;
-	font-family: var(--font-monospace);
-	font-size: 12px;
-	font-style: normal;
-	line-height: 1.4;
-	color: var(--text-normal);
-	word-break: break-all;
-	user-select: all;
-	cursor: text;
 }
 
 /* Empty state */

@@ -20,7 +20,6 @@ import { AttachmentStrip } from "./shared/AttachmentStrip";
 import { InputToolbar } from "./InputToolbar";
 import { getLogger } from "../utils/logger";
 import type { ErrorInfo } from "../types/errors";
-import type { AgentUpdateNotification } from "../services/update-checker";
 import { useSettings } from "../hooks/useSettings";
 
 // ============================================================================
@@ -239,10 +238,6 @@ export interface InputAreaProps {
 	errorInfo: ErrorInfo | null;
 	/** Callback to clear the error */
 	onClearError: () => void;
-	/** Agent update notification (version update or migration) */
-	agentUpdateNotification: AgentUpdateNotification | null;
-	/** Callback to dismiss the agent update notification */
-	onClearAgentUpdate: () => void;
 	/** Messages array for input history navigation */
 	messages: ChatMessage[];
 }
@@ -290,9 +285,6 @@ export function InputArea({
 	// Error overlay props
 	errorInfo,
 	onClearError,
-	// Agent update notification props
-	agentUpdateNotification,
-	onClearAgentUpdate,
 	// Input history
 	messages,
 }: InputAreaProps) {
@@ -951,17 +943,6 @@ export function InputArea({
 					onClose={onClearError}
 					showEmojis={showEmojis}
 					view={view}
-				/>
-			)}
-
-			{/* Agent Update Notification - hidden when error is showing */}
-			{!errorInfo && agentUpdateNotification && (
-				<ErrorBanner
-					errorInfo={agentUpdateNotification}
-					onClose={onClearAgentUpdate}
-					showEmojis={showEmojis}
-					view={view}
-					variant={agentUpdateNotification.variant}
 				/>
 			)}
 

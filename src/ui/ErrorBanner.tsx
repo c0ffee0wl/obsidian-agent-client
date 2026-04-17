@@ -1,7 +1,7 @@
 import * as React from "react";
 const { useEffect } = React;
 import { setIcon } from "obsidian";
-import type { ErrorInfo, OverlayVariant } from "../types/errors";
+import type { ErrorInfo } from "../types/errors";
 import { LucideIcon } from "./shared/IconButton";
 import type { IChatViewHost } from "./view-host";
 
@@ -14,16 +14,10 @@ export interface ErrorBannerProps {
 	showEmojis: boolean;
 	/** View instance for event registration */
 	view: IChatViewHost;
-	/** Visual variant. Defaults to "error" for backward compatibility. */
-	variant?: OverlayVariant;
 }
 
 /**
  * Banner component displayed above the input field.
- *
- * Supports visual variants:
- * - "error" (default): Red border/title — for process errors and failures
- * - "info": Subtle border/title — for update notifications
  *
  * Design decisions:
  * - Uses same positioning pattern as SuggestionPopup (position: absolute; bottom: 100%)
@@ -35,7 +29,6 @@ export function ErrorBanner({
 	onClose,
 	showEmojis,
 	view,
-	variant = "error",
 }: ErrorBannerProps) {
 	// Handle Escape key to close
 	useEffect(() => {
@@ -50,9 +43,7 @@ export function ErrorBanner({
 	}, [onClose, view]);
 
 	return (
-		<div
-			className={`agent-client-error-overlay agent-client-error-overlay--${variant}`}
-		>
+		<div className="agent-client-error-overlay agent-client-error-overlay--error">
 			<div className="agent-client-error-overlay-header">
 				<h4 className="agent-client-error-overlay-title">
 					{errorInfo.title}
@@ -74,19 +65,13 @@ export function ErrorBanner({
 			</p>
 			{errorInfo.suggestion && (
 				<div className="agent-client-error-overlay-suggestion">
-					{showEmojis && variant === "error" && (
+					{showEmojis && (
 						<LucideIcon
 							name="circle-alert"
 							className="agent-client-error-overlay-suggestion-icon"
 						/>
 					)}
-					{variant !== "error" ? (
-						<code className="agent-client-error-overlay-code">
-							{errorInfo.suggestion}
-						</code>
-					) : (
-						errorInfo.suggestion
-					)}
+					{errorInfo.suggestion}
 				</div>
 			)}
 		</div>

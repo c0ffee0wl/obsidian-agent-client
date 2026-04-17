@@ -30,8 +30,7 @@ src/
 │   ├── message-state.ts         # Message array transforms (upsert, merge, streaming apply)
 │   ├── message-sender.ts        # Prompt preparation + sending (pure functions)
 │   ├── chat-exporter.ts         # Markdown export with frontmatter
-│   ├── view-registry.ts         # Multi-view management, focus, broadcast
-│   └── update-checker.ts        # Agent/plugin version checking
+│   └── view-registry.ts         # Multi-view management, focus, broadcast
 ├── hooks/                       # React custom hooks (state + logic)
 │   ├── useAgent.ts              # Facade: composes useAgentSession + useAgentMessages
 │   ├── useAgentSession.ts       # Session lifecycle, config options, optimistic updates
