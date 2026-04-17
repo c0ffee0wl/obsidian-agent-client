@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useMemo } from "react";
+import { Notice } from "obsidian";
 import type { AcpClient } from "../acp/acp-client";
 import type { ISettingsAccess } from "../services/settings-service";
 import type {
@@ -17,6 +18,7 @@ import {
 	findAgentSettings,
 	isClaudeCodeAgent,
 } from "../services/session-helpers";
+import { getLogger } from "../utils/logger";
 
 // ============================================================================
 // Session Capability Helpers (from session-capability-utils.ts)
@@ -304,11 +306,9 @@ export function useSessionHistory(
 	const cacheRef = useRef<SessionCache | null>(null);
 	const currentCwdRef = useRef<string | undefined>(undefined);
 
+	const mirrorAttempted = useRef<Set<string>>(new Set());
+
 	/**
-	 * Fire-and-forget mirror of a newly created session into Claude Code
-	 * CLI's history.jsonl. Bails if the session isn't Claude-backed or the
-	 * user has disabled the toggle. Never throws into the caller.
-	 *
 	 * Not wired into `updateSessionTitle` on purpose — history.jsonl is
 	 * append-only, so re-appending on every title edit would duplicate.
 	 */
@@ -326,8 +326,26 @@ export function useSessionHistory(
 				sessionId,
 				display: title,
 				project,
+				historyDirectory: settings.claudeHistoryDirectory,
 				wslMode: settings.windowsWslMode,
-				wslDistribution: settings.windowsWslDistribution,
+			}).then((result) => {
+				// Record both outcomes: a deterministic failure (unwritable
+				// path, unconfigured dir) shouldn't re-try on every restore.
+				// Users recover by reloading.
+				const firstAttempt = !mirrorAttempted.current.has(sessionId);
+				mirrorAttempted.current.add(sessionId);
+				if (result.ok) {
+					getLogger().log(
+						"[claude-history-sync] wrote to",
+						result.path,
+					);
+					return;
+				}
+				if (!firstAttempt) return;
+				new Notice(
+					`[Agent Client] Claude history sync failed: ${result.error}`,
+					10_000,
+				);
 			});
 		},
 		[settingsAccess, session.agentId],
@@ -605,6 +623,35 @@ export function useSessionHistory(
 				} else {
 					throw new Error("Session restoration is not supported");
 				}
+
+				// Back-fill pre-existing sessions. Cheap settings gates run
+				// first so non-Claude agents and users with sync off skip
+				// the saved-session scan.
+				if (!mirrorAttempted.current.has(sessionId)) {
+					const settings = settingsAccess.getSnapshot();
+					const agentSettings = session.agentId
+						? findAgentSettings(settings, session.agentId)
+						: null;
+					if (
+						settings.claudeHistorySync &&
+						isClaudeCodeAgent(
+							settings,
+							agentSettings,
+							session.agentId,
+						)
+					) {
+						const saved = settingsAccess
+							.getSavedSessions()
+							.find((s) => s.sessionId === sessionId);
+						if (saved?.title) {
+							mirrorToClaudeHistory(
+								sessionId,
+								saved.title,
+								saved.cwd,
+							);
+						}
+					}
+				}
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : String(err);
@@ -623,6 +670,7 @@ export function useSessionHistory(
 			onMessagesRestore,
 			onIgnoreUpdates,
 			onClearMessages,
+			mirrorToClaudeHistory,
 		],
 	);
 

@@ -1,9 +1,9 @@
 /**
  * Mirror newly created sessions into Claude Code CLI's native history index.
  *
- * Target: $CLAUDE_CONFIG_DIR/history.jsonl (default ~/.claude/history.jsonl)
- * Verified against Claude Code CLI v1.x (which reads this file to populate
- * the "recent sessions" picker surfaced via `claude /resume`).
+ * Target: <claudeHistoryDirectory>/history.jsonl — the directory is a
+ * required plugin setting. Claude Code CLI reads this file to populate
+ * the "recent sessions" picker surfaced via `claude /resume`.
  *
  * Line schema (exactly one JSON object per line, newline-terminated):
  *   { "display": string,         // truncated title, ≤50 chars
@@ -18,17 +18,11 @@
  *   - single-line atomicity relies on O_APPEND; stay well below PIPE_BUF (4 KiB)
  */
 
-import { spawn } from "child_process";
 import { promises as fsp } from "fs";
-import * as os from "os";
 import * as path from "path";
 import { Platform } from "obsidian";
 import { getLogger } from "../utils/logger";
-import {
-	buildWslShortCommand,
-	convertWindowsPathToWsl,
-	escapeShellArgBash,
-} from "../utils/platform";
+import { convertWindowsPathToWsl } from "../utils/platform";
 
 export interface ClaudeHistoryMirrorOptions {
 	sessionId: string;
@@ -36,120 +30,62 @@ export interface ClaudeHistoryMirrorOptions {
 	display: string;
 	/** Host-OS absolute path; auto-converted to POSIX in WSL mode. */
 	project: string;
+	/** Absolute directory that holds history.jsonl. */
+	historyDirectory: string;
+	/** Only affects the `project` field (POSIX conversion), not the write path. */
 	wslMode: boolean;
-	wslDistribution?: string;
 	/** Defaults to Date.now(). */
 	timestamp?: number;
 }
 
-interface HistoryLineFields {
-	display: string;
-	pastedContents: Record<string, never>;
-	timestamp: number;
-	project: string;
-	sessionId: string;
-}
+/** Outcome of a mirror attempt. */
+export type ClaudeHistoryWriteResult =
+	| { ok: true; path: string }
+	| { ok: false; error: string };
 
 /**
  * Build the JSON-line payload (without trailing newline).
  * Exported for tests.
  */
 export function buildHistoryLine(opts: ClaudeHistoryMirrorOptions): string {
-	const fields: HistoryLineFields = {
+	const project =
+		Platform.isWin && opts.wslMode
+			? convertWindowsPathToWsl(opts.project)
+			: opts.project;
+	return JSON.stringify({
 		display: opts.display,
 		pastedContents: {},
 		timestamp: opts.timestamp ?? Date.now(),
-		project: opts.project,
+		project,
 		sessionId: opts.sessionId,
-	};
-	return JSON.stringify(fields);
+	});
 }
 
 /**
- * Resolve the absolute path to history.jsonl.
- *
- * Honors $CLAUDE_CONFIG_DIR, falling back to ~/.claude. A relative
- * $CLAUDE_CONFIG_DIR resolves against the user's home directory (not CWD).
- *
- * Exported for tests.
- */
-export function resolveClaudeHistoryPath(
-	env: NodeJS.ProcessEnv,
-	homedir: string,
-): string {
-	const override = env.CLAUDE_CONFIG_DIR;
-	const configDir = override
-		? path.isAbsolute(override)
-			? override
-			: path.resolve(homedir, override)
-		: path.join(homedir, ".claude");
-	return path.join(configDir, "history.jsonl");
-}
-
-/**
- * Append one JSONL entry. Never throws. Logs failures via Logger.warn
- * (gated by debugMode).
+ * Append one JSONL entry. Never throws; returns a structured result.
+ * `historyDirectory` must be non-empty — we don't guess at $HOME /
+ * $CLAUDE_CONFIG_DIR because that was brittle across user shells.
  */
 export async function appendToClaudeHistory(
 	opts: ClaudeHistoryMirrorOptions,
-): Promise<void> {
-	const logger = getLogger();
-
-	try {
-		if (Platform.isWin && opts.wslMode) {
-			await writeViaWsl(opts);
-		} else {
-			await writeDirect(opts);
-		}
-	} catch (err) {
-		logger.warn("[claude-history-sync] failed to append:", err);
+): Promise<ClaudeHistoryWriteResult> {
+	const dir = opts.historyDirectory.trim();
+	if (!dir) {
+		return {
+			ok: false,
+			error: "Claude history directory not configured",
+		};
 	}
-}
-
-async function writeDirect(opts: ClaudeHistoryMirrorOptions): Promise<void> {
-	const target = resolveClaudeHistoryPath(process.env, os.homedir());
-	const line = buildHistoryLine(opts) + "\n";
-	await fsp.mkdir(path.dirname(target), { recursive: true });
-	await fsp.appendFile(target, line, { flag: "a" });
-}
-
-async function writeViaWsl(opts: ClaudeHistoryMirrorOptions): Promise<void> {
-	const wslOpts: ClaudeHistoryMirrorOptions = {
-		...opts,
-		project: convertWindowsPathToWsl(opts.project),
-	};
-	const line = buildHistoryLine(wslOpts);
-	const escapedLine = escapeShellArgBash(line);
-
-	// $HOME and $CLAUDE_CONFIG_DIR are expanded inside the WSL shell.
-	// Using printf '%s\n' avoids echo's backslash-interpretation surprises.
-	const posix =
-		`dir="\${CLAUDE_CONFIG_DIR:-$HOME/.claude}" && ` +
-		`mkdir -p "$dir" && ` +
-		`printf '%s\\n' ${escapedLine} >> "$dir/history.jsonl"`;
-
-	const { command, args } = buildWslShortCommand(
-		posix,
-		opts.wslDistribution,
-	);
-
-	await new Promise<void>((resolve, reject) => {
-		const child = spawn(command, args, { windowsHide: true });
-		let stderr = "";
-		child.stderr?.on("data", (chunk) => {
-			stderr += chunk.toString();
+	const target = path.join(dir, "history.jsonl");
+	try {
+		await fsp.mkdir(dir, { recursive: true });
+		await fsp.appendFile(target, buildHistoryLine(opts) + "\n", {
+			flag: "a",
 		});
-		child.on("error", reject);
-		child.on("close", (code) => {
-			if (code === 0) {
-				resolve();
-			} else {
-				reject(
-					new Error(
-						`wsl.exe exited ${code}${stderr ? `: ${stderr.trim()}` : ""}`,
-					),
-				);
-			}
-		});
-	});
+		return { ok: true, path: target };
+	} catch (err) {
+		const error = err instanceof Error ? err.message : String(err);
+		getLogger().warn("[claude-history-sync] failed to append:", err);
+		return { ok: false, error };
+	}
 }

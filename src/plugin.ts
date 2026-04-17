@@ -96,6 +96,12 @@ export interface AgentClientPluginSettings {
 	 * so they appear in `claude /resume` and external tooling.
 	 */
 	claudeHistorySync: boolean;
+	/**
+	 * Absolute path to the directory containing history.jsonl. Required
+	 * when claudeHistorySync is enabled. Windows+WSL users enter the UNC
+	 * form (\\wsl.localhost\<distro>\home\<user>\.claude).
+	 */
+	claudeHistoryDirectory: string;
 	// Input behavior
 	sendMessageShortcut: SendMessageShortcut;
 	// View settings
@@ -169,6 +175,7 @@ const DEFAULT_SETTINGS: AgentClientPluginSettings = {
 	windowsWslMode: false,
 	windowsWslDistribution: undefined,
 	claudeHistorySync: true,
+	claudeHistoryDirectory: "",
 	sendMessageShortcut: "enter",
 	chatViewLocation: "right-tab",
 	displaySettings: {
@@ -964,6 +971,10 @@ export default class AgentClientPlugin extends Plugin {
 			claudeHistorySync: bool(
 				raw.claudeHistorySync,
 				D.claudeHistorySync,
+			),
+			claudeHistoryDirectory: str(
+				raw.claudeHistoryDirectory,
+				D.claudeHistoryDirectory,
 			),
 			sendMessageShortcut: enumVal(
 				raw.sendMessageShortcut,

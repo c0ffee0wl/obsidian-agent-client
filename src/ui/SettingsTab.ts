@@ -698,7 +698,7 @@ export class AgentClientSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Sync Claude sessions to Claude Code")
 			.setDesc(
-				"Mirror new Claude Code sessions into ~/.claude/history.jsonl so they appear in `claude /resume` and external tools.",
+				"Mirror new Claude Code sessions into history.jsonl so they appear in `claude /resume` and external tools.",
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -708,6 +708,21 @@ export class AgentClientSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					}),
 			);
+
+		new Setting(containerEl)
+			.setName("Claude history directory")
+			.setDesc(
+				"Absolute path to the directory that holds history.jsonl. Required when sync is enabled. On Windows+WSL, use the UNC form, e.g. \\\\wsl.localhost\\Ubuntu\\home\\you\\.claude.",
+			)
+			.addText((text) => {
+				text.setPlaceholder("/home/you/.claude")
+					.setValue(this.plugin.settings.claudeHistoryDirectory)
+					.onChange(async (value) => {
+						this.plugin.settings.claudeHistoryDirectory =
+							value.trim();
+						await this.plugin.saveSettings();
+					});
+			});
 	}
 
 	/**

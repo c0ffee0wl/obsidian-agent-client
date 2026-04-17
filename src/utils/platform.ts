@@ -222,10 +222,10 @@ export function convertWslPathToWindows(wslPath: string): string {
  * $SHELL, and falls back to /bin/sh for non-POSIX shells (fish, elvish,
  * nushell, xonsh).
  *
- * IMPORTANT: wsl.exe pre-expands $VAR references using WSL environment
- * variables before passing them to the Linux shell. Intermediate variables
- * (e.g., s=$SHELL; exec $s) will NOT work because wsl.exe expands $s to
- * empty. Always reference $SHELL or ${SHELL:-/bin/sh} directly.
+ * Reference $SHELL directly — never via `s=$SHELL; exec $s`. On
+ * systemd-enabled WSL, nsenter re-entry can wipe outer-shell vars before
+ * `exec` consumes them. wsl.exe itself passes argv verbatim
+ * (microsoft/WSL#10669, #11635).
  *
  * @param innerCommand - The POSIX command to execute inside the login shell
  * @returns The full wrapper command string to pass as argument to `sh -c`
@@ -307,35 +307,6 @@ export function wrapCommandForWsl(
  */
 function escapePathForShell(path: string): string {
 	return path.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-}
-
-/**
- * Build a wsl.exe invocation that runs a single short POSIX command.
- *
- * Unlike `wrapCommandForWsl`, this does NOT impose a cwd, login shell, or
- * profile sourcing — use it for trivial one-shot writes (e.g. appending a
- * line to a file) where the extra machinery would be wrong. The POSIX
- * command runs as `sh -c <posixCommand>` inside the selected distribution.
- *
- * Validates the distribution name against the same regex as
- * `wrapCommandForWsl`.
- */
-export function buildWslShortCommand(
-	posixCommand: string,
-	distribution?: string,
-): { command: string; args: string[] } {
-	const args: string[] = [];
-	if (distribution) {
-		if (!WSL_DISTRO_NAME_RE.test(distribution)) {
-			throw new Error(`Invalid WSL distribution name: ${distribution}`);
-		}
-		args.push("-d", distribution);
-	}
-	args.push("sh", "-c", posixCommand);
-	return {
-		command: "C:\\Windows\\System32\\wsl.exe",
-		args,
-	};
 }
 
 /**
