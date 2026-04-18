@@ -47,8 +47,8 @@ export function escapeShellArgBash(arg: string): string {
 	return `'${arg.replace(/'/g, "'\\''")}'`;
 }
 
-/** Allowed WSL distribution name characters (alphanumeric, dash, underscore). */
-const WSL_DISTRO_NAME_RE = /^[a-zA-Z0-9_-]+$/;
+/** Allowed WSL distribution name characters (alphanumeric, dot, dash, underscore). */
+const WSL_DISTRO_NAME_RE = /^[a-zA-Z0-9._-]+$/;
 
 /**
  * Cache for the full Windows PATH to avoid repeated registry queries.
