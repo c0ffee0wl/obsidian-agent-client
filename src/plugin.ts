@@ -174,7 +174,7 @@ const DEFAULT_SETTINGS: AgentClientPluginSettings = {
 	},
 	windowsWslMode: false,
 	windowsWslDistribution: undefined,
-	claudeHistorySync: true,
+	claudeHistorySync: false,
 	claudeHistoryDirectory: "",
 	sendMessageShortcut: "enter",
 	chatViewLocation: "right-tab",
