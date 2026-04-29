@@ -32,6 +32,7 @@ import {
 	tryRestoreConfigOption,
 	restoreLegacyConfig,
 } from "../services/session-state";
+import { toAcpError, extractStderrErrorHint } from "../utils/error-utils";
 
 // ============================================================================
 // Types
@@ -275,11 +276,17 @@ export function useAgentSession(
 					);
 				}
 			} catch (error) {
+				const acpError = toAcpError(error);
+				const stderrHint = extractStderrErrorHint(
+					agentClient.getRecentStderr(),
+				);
 				setSession((prev) => ({ ...prev, state: "error" }));
 				setErrorInfo({
 					title: "Session Creation Failed",
-					message: `Failed to create new session: ${error instanceof Error ? error.message : String(error)}`,
+					message: `Failed to create new session: ${acpError.message}`,
 					suggestion:
+						stderrHint ||
+						acpError.suggestion ||
 						"Please check the agent configuration and try again.",
 				});
 			}

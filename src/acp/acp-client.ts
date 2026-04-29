@@ -390,6 +390,8 @@ export class AcpClient {
 	async newSession(workingDirectory: string): Promise<SessionResult> {
 		const connection = this.requireConnection();
 
+		this.recentStderr = "";
+
 		try {
 			this.logger.log("[AcpClient] Creating new session...");
 
@@ -593,6 +595,13 @@ export class AcpClient {
 	 */
 	getCurrentAgentId(): string | null {
 		return this.currentAgentId;
+	}
+
+	/**
+	 * Recent stderr from the agent process (rolling-window, ~4–8KB).
+	 */
+	getRecentStderr(): string {
+		return this.recentStderr;
 	}
 
 	/**
