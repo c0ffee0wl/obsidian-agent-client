@@ -662,7 +662,7 @@ export default class AgentClientPlugin extends Plugin {
 				name: `Switch agent to ${agent.displayName}`,
 				callback: () => {
 					this.app.workspace.trigger(
-						"agent-client:new-chat-requested",
+						"agent-client-c0ffee:new-chat-requested",
 						this.lastActiveChatViewId,
 						agent.id,
 					);
@@ -677,7 +677,7 @@ export default class AgentClientPlugin extends Plugin {
 			name: "Approve active permission",
 			callback: () => {
 				this.app.workspace.trigger(
-					"agent-client:approve-active-permission",
+					"agent-client-c0ffee:approve-active-permission",
 					this.lastActiveChatViewId,
 				);
 			},
@@ -688,7 +688,7 @@ export default class AgentClientPlugin extends Plugin {
 			name: "Reject active permission",
 			callback: () => {
 				this.app.workspace.trigger(
-					"agent-client:reject-active-permission",
+					"agent-client-c0ffee:reject-active-permission",
 					this.lastActiveChatViewId,
 				);
 			},
@@ -699,7 +699,7 @@ export default class AgentClientPlugin extends Plugin {
 			name: "Toggle auto-mention",
 			callback: () => {
 				this.app.workspace.trigger(
-					"agent-client:toggle-auto-mention",
+					"agent-client-c0ffee:toggle-auto-mention",
 					this.lastActiveChatViewId,
 				);
 			},
@@ -710,7 +710,7 @@ export default class AgentClientPlugin extends Plugin {
 			name: "New chat",
 			callback: () => {
 				this.app.workspace.trigger(
-					"agent-client:new-chat-requested",
+					"agent-client-c0ffee:new-chat-requested",
 					this.lastActiveChatViewId,
 				);
 			},
@@ -721,7 +721,7 @@ export default class AgentClientPlugin extends Plugin {
 			name: "Cancel current message",
 			callback: () => {
 				this.app.workspace.trigger(
-					"agent-client:cancel-message",
+					"agent-client-c0ffee:cancel-message",
 					this.lastActiveChatViewId,
 				);
 			},
@@ -732,7 +732,7 @@ export default class AgentClientPlugin extends Plugin {
 			name: "Export chat",
 			callback: () => {
 				this.app.workspace.trigger(
-					"agent-client:export-chat",
+					"agent-client-c0ffee:export-chat",
 					this.lastActiveChatViewId,
 				);
 			},

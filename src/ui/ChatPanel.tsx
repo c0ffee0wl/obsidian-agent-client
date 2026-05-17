@@ -762,7 +762,7 @@ export function ChatPanel({
 		const refs = [
 			// Toggle auto-mention
 			ws.on(
-				"agent-client:toggle-auto-mention",
+				"agent-client-c0ffee:toggle-auto-mention",
 				(targetViewId?: string) => {
 					if (targetViewId && targetViewId !== viewId) return;
 					suggestions.mentions.toggleAutoMention();
@@ -771,7 +771,7 @@ export function ChatPanel({
 
 			// New chat requested (from "New chat" or "Switch agent to" commands)
 			ws.on(
-				"agent-client:new-chat-requested",
+				"agent-client-c0ffee:new-chat-requested",
 				(targetViewId?: string, agentId?: string) => {
 					if (targetViewId && targetViewId !== viewId) return;
 					if (variant === "sidebar") {
@@ -784,7 +784,7 @@ export function ChatPanel({
 
 			// Approve active permission
 			ws.on(
-				"agent-client:approve-active-permission",
+				"agent-client-c0ffee:approve-active-permission",
 				(targetViewId?: string) => {
 					if (targetViewId && targetViewId !== viewId) return;
 					void (async () => {
@@ -801,7 +801,7 @@ export function ChatPanel({
 
 			// Reject active permission
 			ws.on(
-				"agent-client:reject-active-permission",
+				"agent-client-c0ffee:reject-active-permission",
 				(targetViewId?: string) => {
 					if (targetViewId && targetViewId !== viewId) return;
 					void (async () => {
@@ -817,13 +817,13 @@ export function ChatPanel({
 			),
 
 			// Cancel current message
-			ws.on("agent-client:cancel-message", (targetViewId?: string) => {
+			ws.on("agent-client-c0ffee:cancel-message", (targetViewId?: string) => {
 				if (targetViewId && targetViewId !== viewId) return;
 				void handleStopGenerationRef.current();
 			}),
 
 			// Export chat
-			ws.on("agent-client:export-chat", (targetViewId?: string) => {
+			ws.on("agent-client-c0ffee:export-chat", (targetViewId?: string) => {
 				if (targetViewId && targetViewId !== viewId) return;
 				void handleExportChatRef.current();
 			}),

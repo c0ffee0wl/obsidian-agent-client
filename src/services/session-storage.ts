@@ -159,7 +159,7 @@ export class SessionStorage {
 	// ============================================================
 
 	private getSessionsDir(): string {
-		return `${this.plugin.app.vault.configDir}/plugins/agent-client/sessions`;
+		return `${this.plugin.app.vault.configDir}/plugins/${this.plugin.manifest.id}/sessions`;
 	}
 
 	private async ensureSessionsDir(): Promise<void> {

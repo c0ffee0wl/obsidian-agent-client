@@ -1,6 +1,6 @@
 {
-	"id": "agent-client",
-	"name": "Agent Client",
+	"id": "agent-client-c0ffee",
+	"name": "Agent Client (fork)",
 	"version": "0.10.3",
 	"minAppVersion": "1.7.2",
 	"description": "Chat with AI agents via the Agent Client Protocol directly from your vault.",

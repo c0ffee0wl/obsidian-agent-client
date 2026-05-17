@@ -22,7 +22,7 @@ import { ChatPanel, type ChatPanelCallbacks } from "./ChatPanel";
 // Service imports
 import { VaultService } from "../services/vault-service";
 
-export const VIEW_TYPE_CHAT = "agent-client-chat-view";
+export const VIEW_TYPE_CHAT = "agent-client-c0ffee-chat-view";
 
 function ChatComponent({
 	plugin,
