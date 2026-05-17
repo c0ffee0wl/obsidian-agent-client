@@ -15,8 +15,6 @@ export interface SidebarHeaderProps {
 	variant: "sidebar";
 	/** Display name of the active agent */
 	agentLabel: string;
-	/** Whether session history is supported (show History button) */
-	hasHistoryCapability?: boolean;
 	/** Callback to create a new chat session */
 	onNewChat: () => void;
 	/** Callback to export the chat */
@@ -100,7 +98,6 @@ function NavActionButton({
  */
 function SidebarHeader({
 	agentLabel,
-	hasHistoryCapability = false,
 	onNewChat,
 	onExportChat,
 	onShowMenu,

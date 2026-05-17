@@ -91,7 +91,6 @@ export interface UseAgentReturn {
 	setMessagesFromLocal: (localMessages: ChatMessage[]) => void;
 	clearError: () => void;
 	setIgnoreUpdates: (ignore: boolean) => void;
-
 	// Permission
 	activePermission: ActivePermission | null;
 	hasActivePermission: boolean;
@@ -159,6 +158,12 @@ export function useAgent(
 		[agentSession.handleSessionUpdate, agentMessages.enqueueUpdate],
 	);
 
+	// Composed cancel: session-level cancel + message-level RAF cleanup
+	const cancelOperation = useCallback(async () => {
+		await agentSession.cancelOperation();
+		agentMessages.clearPendingUpdates();
+	}, [agentSession.cancelOperation, agentMessages.clearPendingUpdates]);
+
 	// Subscribe to all updates from agent
 	useEffect(() => {
 		const unsubscribe = agentClient.onSessionUpdate(handleSessionUpdate);
@@ -188,7 +193,7 @@ export function useAgent(
 			restartSession: agentSession.restartSession,
 			closeSession: agentSession.closeSession,
 			forceRestartAgent: agentSession.forceRestartAgent,
-			cancelOperation: agentSession.cancelOperation,
+			cancelOperation,
 			getAvailableAgents: agentSession.getAvailableAgents,
 			updateSessionFromLoad: agentSession.updateSessionFromLoad,
 
@@ -223,7 +228,7 @@ export function useAgent(
 			agentSession.restartSession,
 			agentSession.closeSession,
 			agentSession.forceRestartAgent,
-			agentSession.cancelOperation,
+			cancelOperation,
 			agentSession.getAvailableAgents,
 			agentSession.updateSessionFromLoad,
 			agentSession.setMode,

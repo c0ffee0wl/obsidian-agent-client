@@ -39,7 +39,7 @@ export function ErrorBanner({
 			}
 		};
 
-		view.registerDomEvent(document, "keydown", handleKeyDown);
+		view.registerDomEvent(activeDocument, "keydown", handleKeyDown);
 	}, [onClose, view]);
 
 	return (
